@@ -7,6 +7,11 @@
 </p>
 <br><br>
 
+## Changes for Fork
+
+This includes a few pull requests from the forked github repository. It does not seem to be maintained particularly and 
+these changes are low-risk and useful (such as adding a getRssi method). See the updater branch for latest code. MZ
+
 ## Introduction
 
 FlutterBlue is a bluetooth plugin for [Flutter](https://flutter.dev), a new app SDK to help developers build modern multi-platform apps.
