@@ -26,21 +26,28 @@ class BluetoothDevice {
       ..remoteId = id.toString()
       ..androidAutoConnect = autoConnect;
 
-    Timer? timer;
-    if (timeout != null) {
-      timer = Timer(timeout, () {
-        disconnect();
-        throw TimeoutException('Failed to connect in time.', timeout);
-      });
-    }
-
     await FlutterBlue.instance._channel
         .invokeMethod('connect', request.writeToBuffer());
 
-    await state.firstWhere((s) => s == BluetoothDeviceState.connected);
+    var stateFuture = state.firstWhere((s) => s == BluetoothDeviceState.connected);
 
-    timer?.cancel();
+    if (timeout != null) {
+      var isTimeOut = false;
+      var timeoutFuture = Future(() async {
+        await Future.delayed(timeout);
+        isTimeOut = true;
+      });
 
+      await Future.any([stateFuture, timeoutFuture]);
+
+      /// timeout
+      if (isTimeOut) {
+        disconnect();
+        throw TimeoutException('Failed to connect in time.', timeout);
+      }
+    } else {
+      await stateFuture;
+    }
     return;
   }
 
